@@ -1,0 +1,95 @@
+
+//+------------------------------------------------------------------+
+//|                                           Anti Trend Trader.mq5  |
+//|                      Developed by Forex Robot Easy Team          |
+//|                                         forexroboteasy.com       |
+//+------------------------------------------------------------------+
+
+// Define input parameters
+input double MinimumDeposit = 500.0; // Minimum deposit requirement to start trading
+input double EquityVolume = 0.01; // Initial equity volume
+input double StopLossPercent = 1.0; // Stop loss percentage
+input double TakeProfitPercent = 2.0; // Take profit percentage
+
+// Define global variables
+double AccountBalance; // Current account balance
+double Equity; // Current equity
+double StopLossLevel; // Stop loss level
+double TakeProfitLevel; // Take profit level
+
+//+------------------------------------------------------------------+
+//| Expert initialization function                                   |
+//+------------------------------------------------------------------+
+int OnInit()
+{
+    // Get current account balance and equity
+    AccountBalance = AccountInfoDouble(ACCOUNT_BALANCE);
+    Equity = AccountBalance;
+
+    // Set stop loss and take profit levels based on input parameters
+    StopLossLevel = Bid - (Bid * StopLossPercent / 100);
+    TakeProfitLevel = Bid + (Bid * TakeProfitPercent / 100);
+
+    return INIT_SUCCEEDED;
+}
+
+//+------------------------------------------------------------------+
+//| Expert tick function                                             |
+//+------------------------------------------------------------------+
+void OnTick()
+{
+    // Check if current equity is less than minimum deposit requirement
+    if (Equity < MinimumDeposit)
+    {
+        Print('Insufficient equity to start trading');
+        return;
+    }
+
+    // Check for potential trading opportunities based on market trends
+    if (CheckMarketTrends())
+    {
+        // Execute trade based on algorithm's criteria
+        ExecuteTrade();
+    }
+}
+
+//+------------------------------------------------------------------+
+//| Function to check market trends                                  |
+//+------------------------------------------------------------------+
+bool CheckMarketTrends()
+{
+    // Add logic here to monitor and analyze market trends
+    // Return true if a trading opportunity is identified, false otherwise
+    return false;
+}
+
+//+------------------------------------------------------------------+
+//| Function to execute trade                                         |
+//+------------------------------------------------------------------+
+void ExecuteTrade()
+{
+    // Calculate position size based on equity volume
+    double PositionSize = Equity * EquityVolume;
+
+    // Place stop loss and take profit levels for the trade
+    int Ticket = OrderSend(Symbol(), OP_BUY, PositionSize, Ask, 0, StopLossLevel, TakeProfitLevel);
+
+    // Check if order placement was successful
+    if (Ticket > 0)
+    {
+        Print('Trade executed successfully');
+        // Add logic here to manage and monitor the trade
+    }
+    else
+    {
+        Print('Trade execution failed with error code:', GetLastError());
+    }
+}
+
+//+------------------------------------------------------------------+
+//| Expert deinitialization function                                 |
+//+------------------------------------------------------------------+
+void OnDeinit(const int reason)
+{
+    // Add any necessary cleanup or finalization code here
+}
